@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>q.js的使用</title>
+	<title>简单的路由</title>
 	<script src="js/q.js"></script>
 	<style>
 		* {
@@ -55,74 +55,74 @@
 	<div class="container">
 		<div class="left-menu">
 			<ul>
-				<li><a href="javascript:;">aaa</a></li>
-				<li><a href="javascript:;">bbb</a></li>
-				<li><a href="javascript:;">ccc</a></li>
-				<li><a href="javascript:;">ddd</a></li>
-				<li><a href="javascript:;">eee</a></li>
-				<li><a href="javascript:;">fff</a></li>
+				<li><a href="#!a">aaa</a></li>
+				<li><a href="#!b">bbb</a></li>
+				<li><a href="#!c">ccc</a></li>
+				<li><a href="#!d">ddd</a></li>
+				<li><a href="#!e">eee</a></li>
+				<li><a href="#!f">fff</a></li>
 			</ul>
 		</div>
 		<div id="right-con"></div>
 	</div>
+	<script type="text/html" id="a">
+		<h3>AAAAAAAAA</h3>
+		<p>我是A页面</p>
+		<p>我是A页面</p>
+		<p>我是A页面</p>
+	</script>
+	<script type="text/html" id="b">
+		<h3>BBBBBBBBB</h3>
+		<p>我是B页面</p>
+		<p>我是B页面</p>
+		<p>我是B页面</p>
+	</script>
+	<script type="text/html" id="c">
+		<h3>CCCCCCCCC</h3>
+		<p>我是C页面</p>
+		<p>我是C页面</p>
+		<p>我是C页面</p>
+	</script>
+	<script type="text/html" id="d">
+		<h3>DDDDDDDDD</h3>
+		<p>我是D页面</p>
+		<p>我是D页面</p>
+		<p>我是D页面</p>
+	</script>
+	<script type="text/html" id="e">
+		<h3>EEEEEEEEE</h3>
+		<p>我是E页面</p>
+		<p>我是E页面</p>
+		<p>我是E页面</p>
+	</script>
+	<script type="text/html" id="f">
+		<h3>FFFFFFFFF</h3>
+		<p>我是F页面</p>
+		<p>我是F页面</p>
+		<p>我是F页面</p>
+	</script>
 	<script>
-		// 假设后台数据返回成功/失败
-		var res = {
-			success:true
-			// success:false
-		}
+		// 获取li元素
 		var lis = document.querySelectorAll('li');
 		// 保存锚点的数组
 		var arr = ['a','b','c','d','e','f'];
-		// 获取锚点索引
-		var index = sessionStorage.getItem('index');
-		window.addEventListener('hashchange',function(){
-			// 本地保存锚点变化时的索引
-			sessionStorage.setItem('index',arr.indexOf(location.hash.slice(2)));
-			// 更新索引
-			index = sessionStorage.getItem('index');
-			// 将之前的高亮的li元素去掉样式
-			if(document.getElementsByClassName('active')[0]) document.getElementsByClassName('active')[0].classList.remove('active');
-			// 设置当前高亮
-			addBg();
-		})
-		// 当前高亮方法
-		function addBg(){
-			// 如果本地存储没有'index',或值为0，就设置第一个元素高亮，否者就设置'index'值作为lis的索引的li元素高亮
-			if(!index){
-				sessionStorage.setItem('index',0);
-				lis[0].className = 'active';
-			}else {
-				lis[index].className = 'active';
+		// 锚点事件监听
+		Q.pop = function() {
+			var hashName = location.hash.slice(2);
+			// 获取锚点索引
+			var index = arr.indexOf(hashName);
+			index = index !== -1 ? index : 0;
+			for (var i = 0; i < lis.length; i++) {
+				lis[i].className = '';
 			}
+			lis[index].className = 'active';
 		}
-		// 设置当前高亮
-		addBg();
-		for (var i = 0; i < lis.length; i++) {
-			lis[i].index = i;
-			lis[i].onclick = function(){
-				if(res.success){
-					var a = this.getElementsByTagName('a')[0];
-				}else {
-					alert('返回失败重定向到首页');
-					location.hash = '#!a';
-					sessionStorage.setItem('index',0);
-					document.getElementsByClassName('active')[0].classList.remove('active');
-					lis[0].className = 'active';
-					return false;
-				}
-				a.href = '#!'+arr[this.index];
-				sessionStorage.setItem('index',this.index);
-				for (var i = 0; i < lis.length; i++) {
-					lis[i].className = '';
-				}
-				this.className = 'active';
-			}
-		}
+		// 路由构造函数
 		function router(anchor,html){
 			this.anchor = anchor;
 			this.html = html;
 		}
+		// 原型属性
 		router.prototype = {
 			constructor: router,
 			routes:function(){
@@ -132,12 +132,11 @@
 				});
 			}
 		}
-		new router('a','<h3>AAAAAAAAA</h3>').routes();
-		new router('b','<h3>BBBBBBBBB</h3>').routes();
-		new router('c','<h3>CCCCCCCCC</h3>').routes();
-		new router('d','<h3>DDDDDDDDD</h3>').routes();
-		new router('e','<h3>EEEEEEEEE</h3>').routes();
-		new router('f','<h3>FFFFFFFFF</h3>').routes();
+		// 执行所有路由方法
+		for (var i = 0; i < arr.length; i++) {
+			var item = arr[i];
+			new router(item,document.getElementById(item).innerHTML).routes();
+		}
 		Q.init({
 		    index:'a'// 首页
 		});
