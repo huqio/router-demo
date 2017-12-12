@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>q.js的使用</title>
+	<script src="js/q.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			background: #e4e4e4;
+		}
+		.container {
+			width: 500px;
+			margin: 80px auto 0;
+		}
+		.left-menu {
+			float: left;
+		}
+		.left-menu ul {
+			width: 80px;
+			list-style: none;
+		}
+		.left-menu ul li {
+			line-height: 26px;
+			text-align: center;
+			background: skyblue;
+		}
+		.left-menu ul li:hover {
+			background-color: #ccc;
+		}
+		.left-menu ul li.active {
+			background-color: pink;
+		}
+		.left-menu ul li a {
+			text-decoration: none;
+			color: #333;
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+		#right-con {
+			overflow: hidden;
+			height: 136px;
+			background-color: #fff;
+			font-size: 18px;
+			padding: 10px;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="left-menu">
+			<ul>
+				<li><a href="javascript:;">aaa</a></li>
+				<li><a href="javascript:;">bbb</a></li>
+				<li><a href="javascript:;">ccc</a></li>
+				<li><a href="javascript:;">ddd</a></li>
+				<li><a href="javascript:;">eee</a></li>
+				<li><a href="javascript:;">fff</a></li>
+			</ul>
+		</div>
+		<div id="right-con"></div>
+	</div>
+	<script>
+		// 假设后台数据返回成功/失败
+		var res = {
+			success:true
+			// success:false
+		}
+		var lis = document.querySelectorAll('li');
+		// 保存锚点的数组
+		var arr = ['a','b','c','d','e','f'];
+		// 获取锚点索引
+		var index = sessionStorage.getItem('index');
+		window.addEventListener('hashchange',function(){
+			// 本地保存锚点变化时的索引
+			sessionStorage.setItem('index',arr.indexOf(location.hash.slice(2)));
+			// 更新索引
+			index = sessionStorage.getItem('index');
+			// 将之前的高亮的li元素去掉样式
+			if(document.getElementsByClassName('active')[0]) document.getElementsByClassName('active')[0].classList.remove('active');
+			// 设置当前高亮
+			addBg();
+		})
+		// 当前高亮方法
+		function addBg(){
+			// 如果本地存储没有'index',或值为0，就设置第一个元素高亮，否者就设置'index'值作为lis的索引的li元素高亮
+			if(!index){
+				sessionStorage.setItem('index',0);
+				lis[0].className = 'active';
+			}else {
+				lis[index].className = 'active';
+			}
+		}
+		// 设置当前高亮
+		addBg();
+		for (var i = 0; i < lis.length; i++) {
+			lis[i].index = i;
+			lis[i].onclick = function(){
+				if(res.success){
+					var a = this.getElementsByTagName('a')[0];
+				}else {
+					alert('返回失败重定向到首页');
+					location.hash = '#!a';
+					sessionStorage.setItem('index',0);
+					document.getElementsByClassName('active')[0].classList.remove('active');
+					lis[0].className = 'active';
+					return false;
+				}
+				a.href = '#!'+arr[this.index];
+				sessionStorage.setItem('index',this.index);
+				for (var i = 0; i < lis.length; i++) {
+					lis[i].className = '';
+				}
+				this.className = 'active';
+			}
+		}
+		function router(anchor,html){
+			this.anchor = anchor;
+			this.html = html;
+		}
+		router.prototype = {
+			constructor: router,
+			routes:function(){
+				var that = this;
+				Q.reg(this.anchor,function(){
+			    	document.getElementById('right-con').innerHTML=that.html;
+				});
+			}
+		}
+		new router('a','<h3>AAAAAAAAA</h3>').routes();
+		new router('b','<h3>BBBBBBBBB</h3>').routes();
+		new router('c','<h3>CCCCCCCCC</h3>').routes();
+		new router('d','<h3>DDDDDDDDD</h3>').routes();
+		new router('e','<h3>EEEEEEEEE</h3>').routes();
+		new router('f','<h3>FFFFFFFFF</h3>').routes();
+		Q.init({
+		    index:'a'// 首页
+		});
+	</script>
+</body>
+</html>
