@@ -120,10 +120,7 @@
 		}
 		var container = document.getElementById('right-con');
 		// 执行所有路由方法
-		for (var i = 0; i < arr.length; i++) {
-			var item = arr[i];
-			r(item,document.getElementById(item).innerHTML).routes(container);
-		}
+		r.routesCall(arr);
 		Q.init({
 		    index:'a'// 首页
 		});

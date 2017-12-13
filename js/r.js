@@ -29,15 +29,22 @@
 	r.fn.init.prototype = r.fn;
 	// 添加可扩展的方法 extend
 	r.extend = r.fn.extend = function ( obj ) {
-	  for ( var k in obj ) {
-	    this[ k ] = obj[ k ];
-	  }
+	  	for ( var k in obj ) {
+	  	  this[ k ] = obj[ k ];
+	  	}
 	}
 	r.extend({
 		// 判断字符串
 		isString: function ( data ) {
    			return typeof data === 'string';
-  		}
+  		},
+		routesCall:function(anchorArr){
+			// 执行所有路由方法
+			for (var i = 0; i < anchorArr.length; i++) {
+				var item = anchorArr[i];
+				r(item,document.getElementById(item).innerHTML).routes(container);
+			}
+		}
 	})
 	// 导出到全局
 	window.r = r;
